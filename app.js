@@ -1,15 +1,19 @@
-// budjet conrolleer
+/*
+
+BUDJET CONTROLLER  
+
+*/
 var budjetController = (function() {
   //use Capital Heading for constructor functions
-  var Expense = function(id, descriction, value) {
-    (this.id = id), (this.descriction = descriction), (this.value = value);
+  var Expense = function(id, description, value) {
+    (this.id = id), (this.description = description), (this.value = value);
   };
-  var Income = function(id, descriction, value) {
-    (this.id = id), (this.descriction = descriction), (this.value = value);
+  var Income = function(id, description, value) {
+    (this.id = id), (this.description = description), (this.value = value);
   };
 
   //Data structure for application
-  let data = {
+  var data = {
     allItems: {
       exp: [],
       inc: []
@@ -21,17 +25,14 @@ var budjetController = (function() {
   };
 
   //create a public method to enable external module to have access to adding new items to the dat structure
-
   return {
     addItem: function(type, des, val) {
       let newItem, ID;
 
-      //create new ID
+      //create new ID// Create new ID
       if (data.allItems[type].length > 0) {
-        // check if its not empty
-        ID = data.allItems[type][data.allItems[type].length - 1].id + 1; // assignt an ID
+        ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
       } else {
-        // the data structure is empty assign 0
         ID = 0;
       }
 
@@ -54,12 +55,19 @@ var budjetController = (function() {
   };
 })();
 
+/*
+
+USER INTERFACE CONTROLLER
+
+*/
 let UIController = (function() {
   let DOMStrings = {
     inputTypes: ".add__type",
     inputDesc: ".add__description",
     inputValue: ".add__value",
-    inputBtn: ".add__btn"
+    inputBtn: ".add__btn",
+    incomeContainer: ".income__list",
+    expensesContainer: ".expenses__list"
   };
 
   return {
@@ -71,16 +79,45 @@ let UIController = (function() {
       };
     },
 
+    addListItem: function(obj, type) {
+      var html, newHtml, element;
+
+      //1.create html string witg placeholder text
+
+      if (type === "inc") {
+        element = DOMStrings.incomeContainer;
+        html =
+          '<div class="item clearfix" id="inc-%id%"> <div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+      } else if (type === "exp") {
+        element = DOMStrings.expensesContainer;
+        html =
+          '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+      }
+
+      //2.replace the placeholder text with some actual data
+      newHtml = html.replace("%id%", obj.id);
+      newHtml = newHtml.replace("%description%", obj.description);
+      newHtml = newHtml.replace("%value%", obj.value);
+
+      //3.finally we insert the html into the DOM
+      //document.querySelector(element).insertAdjacentHTML("beforeend", newHtml);
+      document.querySelector(element).insertAdjacentHTML("beforeend", newHtml);
+    },
+
     getDOMStrings: function() {
       return DOMStrings;
     }
   };
 })();
 
-// Global app controller
+/*
+
+MAIN APPLICATION CONTROLLER
+
+*/
 let controller = (function(budgetCtrl, UICtrl) {
-  let setupEventListeners = function() {
-    let DOM = UICtrl.getDOMStrings();
+  var setupEventListeners = function() {
+    var DOM = UICtrl.getDOMStrings();
 
     document.querySelector(DOM.inputBtn).addEventListener("click", ctrlAddItem);
 
@@ -92,18 +129,17 @@ let controller = (function(budgetCtrl, UICtrl) {
     });
   };
 
-  let ctrlAddItem = function() {
-    //console.log("Adding gratually  . . . ");
-
-    let input, newItem;
+  var ctrlAddItem = function() {
+    var input, newItem;
     //1.Get th field input
     input = UICtrl.getInput();
-    console.log(input);
+    //console.log(input);
 
     //2.Add th item  to budget controller
     newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
     //3.Add the item to the UI
+    UICtrl.addListItem(newItem, input.type);
 
     //4.Calculate the budget
 
