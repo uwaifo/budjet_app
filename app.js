@@ -1,10 +1,10 @@
 // budjet conrolleer
 var budjetController = (function() {
   //use Capital Heading for constructor functions
-  let Expense = function(id, descriction, value) {
+  var Expense = function(id, descriction, value) {
     (this.id = id), (this.descriction = descriction), (this.value = value);
   };
-  let Income = function(id, descriction, value) {
+  var Income = function(id, descriction, value) {
     (this.id = id), (this.descriction = descriction), (this.value = value);
   };
 
@@ -17,6 +17,39 @@ var budjetController = (function() {
     totals: {
       exp: 0,
       inc: 0
+    }
+  };
+
+  //create a public method to enable external module to have access to adding new items to the dat structure
+
+  return {
+    addItem: function(type, des, val) {
+      let newItem, ID;
+
+      //create new ID
+      if (data.allItems[type].length > 0) {
+        // check if its not empty
+        ID = data.allItems[type][data.allItems[type].length - 1].id + 1; // assignt an ID
+      } else {
+        // the data structure is empty assign 0
+        ID = 0;
+      }
+
+      //create new item based on 'inc' or 'exp' type
+      if (type === "exp") {
+        newItem = new Expense(ID, des, val);
+      } else if (type === "inc") {
+        newItem = new Income(ID, des, val);
+      }
+
+      //push to data structure
+      data.allItems[type].push(newItem); // add newItem to the end of the array
+
+      //return the new item elem ent
+      return newItem;
+    },
+    testing: function() {
+      console.log(data);
     }
   };
 })();
@@ -61,10 +94,14 @@ let controller = (function(budgetCtrl, UICtrl) {
 
   let ctrlAddItem = function() {
     //console.log("Adding gratually  . . . ");
+
+    let input, newItem;
     //1.Get th field input
-    let input = UICtrl.getInput();
+    input = UICtrl.getInput();
     console.log(input);
+
     //2.Add th item  to budget controller
+    newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
     //3.Add the item to the UI
 
@@ -82,4 +119,3 @@ let controller = (function(budgetCtrl, UICtrl) {
 })(budjetController, UIController);
 
 controller.init();
-//creating income and expense functions
