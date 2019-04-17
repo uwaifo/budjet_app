@@ -8,6 +8,7 @@ let UIController = (function() {
     inputValue: ".add__value",
     inputBtn: ".add__btn"
   };
+
   return {
     getInput: function() {
       return {
@@ -25,23 +26,39 @@ let UIController = (function() {
 
 // Global app controller
 let controller = (function(budgetCtrl, UICtrl) {
-  let DOM = UICtrl.getDOMStrings();
+  let setupEventListeners = function() {
+    let DOM = UICtrl.getDOMStrings();
+
+    document.querySelector(DOM.inputBtn).addEventListener("click", ctrlAddItem);
+
+    document.addEventListener("keypress", function(event) {
+      //console.log(event);
+      if (event.keyCode === 13 || event.which === 13) {
+        ctrlAddItem();
+      }
+    });
+  };
+
   let ctrlAddItem = function() {
     //console.log("Adding gratually  . . . ");
     //1.Get th field input
     let input = UICtrl.getInput();
     console.log(input);
-    //Add th item  to budget controller
-    //Add the item to the UI
-    //Calculate the budget
-    //Display the budjet  in the UI
-  };
-  document.querySelector(DOM.inputBtn).addEventListener("click", ctrlAddItem);
+    //2.Add th item  to budget controller
 
-  document.addEventListener("keypress", function(event) {
-    //console.log(event);
-    if (event.keyCode === 13) {
-      ctrlAddItem();
+    //3.Add the item to the UI
+
+    //4.Calculate the budget
+
+    //5.Display the budjet  in the UI
+  };
+
+  return {
+    init: function() {
+      console.log("Application has started");
+      setupEventListeners();
     }
-  });
+  };
 })(budjetController, UIController);
+
+controller.init();
