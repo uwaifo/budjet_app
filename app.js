@@ -1,5 +1,25 @@
 // budjet conrolleer
-var budjetController = (function() {})();
+var budjetController = (function() {
+  //use Capital Heading for constructor functions
+  let Expense = function(id, descriction, value) {
+    (this.id = id), (this.descriction = descriction), (this.value = value);
+  };
+  let Income = function(id, descriction, value) {
+    (this.id = id), (this.descriction = descriction), (this.value = value);
+  };
+
+  //Data structure for application
+  let data = {
+    allItems: {
+      exp: [],
+      inc: []
+    },
+    totals: {
+      exp: 0,
+      inc: 0
+    }
+  };
+})();
 
 let UIController = (function() {
   let DOMStrings = {
@@ -62,3 +82,4 @@ let controller = (function(budgetCtrl, UICtrl) {
 })(budjetController, UIController);
 
 controller.init();
+//creating income and expense functions
