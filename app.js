@@ -1,9 +1,9 @@
 /*
 
-BUDJET CONTROLLER  
+BUDGET CONTROLLER  
 
 */
-var budjetController = (function() {
+var budgetController = (function() {
   //use Capital Heading for constructor functions
   var Expense = function(id, description, value) {
     (this.id = id), (this.description = description), (this.value = value);
@@ -12,6 +12,13 @@ var budjetController = (function() {
     (this.id = id), (this.description = description), (this.value = value);
   };
 
+  var calculateTotal = function(type) {
+    var sum = 0;
+    data.allItems[type].forEach(function(cur) {
+      sum += cur.value;
+    });
+    data.totals[type] = sum;
+  };
   //Data structure for application
   var data = {
     allItems: {
@@ -21,7 +28,9 @@ var budjetController = (function() {
     totals: {
       exp: 0,
       inc: 0
-    }
+    },
+    budget: 0,
+    percentage: -1
   };
 
   //create a public method to enable external module to have access to adding new items to the dat structure
@@ -49,6 +58,30 @@ var budjetController = (function() {
       //return the new item elem ent
       return newItem;
     },
+
+    calculateBudget: function() {
+      //calculate total income
+      calculateTotal("exp");
+      calculateTotal("inc");
+      //calculate the budget: income - expense
+      data.budget = data.totals.inc - data.totals.exp;
+      //calculate the percentage
+      if (data.totals.inc > 0) {
+        data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+      } else {
+        data.percentage = -1;
+      }
+    },
+
+    getBudget: function() {
+      return {
+        budget: data.budget,
+        totalInc: data.totals.inc,
+        totalExp: data.totals.exp,
+        percentage: data.percentage
+      };
+    },
+
     testing: function() {
       console.log(data);
     }
@@ -141,9 +174,12 @@ let controller = (function(budgetCtrl, UICtrl) {
     });
   };
 
-  var updateBudjet = function() {
+  var updateBudget = function() {
     //1.Calculate the budget
+    budgetCtrl.calculateBudget();
     //2.Return the budjet
+    var budget = budgetCtrl.getBudget();
+    console.log(budget);
     //3.Display the budjet  in the UI
   };
 
@@ -152,9 +188,12 @@ let controller = (function(budgetCtrl, UICtrl) {
     //1.Get th field input
     input = UICtrl.getInput();
     //console.log(input);
-    //check to ensure that both input fields have valid inputs
-    // check that description is not empty and value is not NaN(not a number)
-    // also ccheck that value is grater than 0
+
+    /* check to ensure that both input fields have valid inputs
+       check that description is not empty and value is not NaN(not a number)
+       also ccheck that value is grater than 0
+    */
+
     if (input.description !== "" && !isNaN(input.value) & (input.value > 0)) {
       //2.Add th item  to budget controller
       newItem = budgetCtrl.addItem(input.type, input.description, input.value);
@@ -166,7 +205,7 @@ let controller = (function(budgetCtrl, UICtrl) {
       UICtrl.clearFields();
 
       //5. calculate and update budjet
-      updateBudjet();
+      updateBudget();
     }
   };
 
@@ -176,6 +215,6 @@ let controller = (function(budgetCtrl, UICtrl) {
       setupEventListeners();
     }
   };
-})(budjetController, UIController);
+})(budgetController, UIController);
 
 controller.init();
